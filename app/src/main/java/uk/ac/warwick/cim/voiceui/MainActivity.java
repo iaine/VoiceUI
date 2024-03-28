@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.lang.reflect.*;
 
@@ -30,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
         String requiredPermission = Manifest.permission.RECORD_AUDIO;
 
-        // If the user previously denied this permission then show a message explaining why
-        // this permission is needed
         if (checkCallingOrSelfPermission(requiredPermission) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{requiredPermission}, 101);
         }
@@ -70,7 +66,9 @@ public class MainActivity extends AppCompatActivity {
         Method[] m = inten.getClass().getDeclaredMethods();
         for (Method method : m) code += method;
         Log.i("VOICE", code);
-        //printFile(view.getContext(), inten.getClass().getName().toString(), code);
+        File codeFile = new File(this.getExternalFilesDir(null), "code.txt");
+        FileWriter fWrite = new FileWriter(codeFile);
+        fWrite.writeFile(codeFile.toString(), code);
         // This starts the activity and populates the intent with the speech text.
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
