@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -67,35 +66,14 @@ public class MainActivity extends AppCompatActivity {
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         //use reflection to look at the class
         Object inten = intent;
-        System.out.println(inten.getClass().getDeclaredMethods() );
         String code = inten.getClass().toString() + "\n";
         Method[] m = inten.getClass().getDeclaredMethods();
-        for (int i=0;i<m.length;i++) {
-            code += m[i];
-        }
+        for (Method method : m) code += method;
         Log.i("VOICE", code);
         //printFile(view.getContext(), inten.getClass().getName().toString(), code);
         // This starts the activity and populates the intent with the speech text.
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
-
-    private void printFile (Context ctx, String reflectedName, String codeData) {
-        FileOutputStream outputStream;
-        try {
-            File file = new File(ctx.getExternalFilesDir(null), reflectedName + ".txt");
-            // test if file exists.
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            outputStream = new FileOutputStream(file, true);
-            outputStream.write(codeData.getBytes());
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
-            Log.i("FILE", e.toString());
-        }
-    }
-
 
     // This callback is invoked when the Speech Recognizer returns.
     // This is where you process the intent and extract the speech text from the intent.
@@ -103,8 +81,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
-            List<String> results = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS);
+            List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
             Log.i("VOICE", results.toString());
             float[] confidences = data.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
