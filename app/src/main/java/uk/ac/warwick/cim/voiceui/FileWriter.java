@@ -1,7 +1,5 @@
 package uk.ac.warwick.cim.voiceui;
 
-
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.File;
@@ -13,7 +11,7 @@ import java.io.FileOutputStream;
 
 public class FileWriter {
     //public class FileConnection {
-    private File fileName;
+    public File fileName;
 
     public FileWriter (File fName) {
         fileName = fName;
@@ -25,7 +23,10 @@ public class FileWriter {
         try {
             File file = new File(fileName);
             if (!file.exists()) {
-                file.createNewFile();
+                boolean newfile = file.createNewFile();
+                if (!newfile) {
+                    throw new Exception("Could not create " + file);
+                }
             }
             outputStream = new FileOutputStream(file, true);
             outputStream.write(params.getBytes());
