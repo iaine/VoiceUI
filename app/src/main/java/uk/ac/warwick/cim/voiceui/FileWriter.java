@@ -21,12 +21,9 @@ public class FileWriter {
 
     public void writeFile (String fileName, String params) {
         FileOutputStream outputStream;
-        //@todo: check for this on load and create it.
-        String filename = "signal.txt";
+
         try {
-            //sFile file = new File(mContext.getExternalFilesDir(null), filename);
             File file = new File(fileName);
-            // test if file exists.
             if (!file.exists()) {
                 file.createNewFile();
             }
