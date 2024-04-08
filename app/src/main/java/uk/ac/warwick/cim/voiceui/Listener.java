@@ -21,6 +21,8 @@ class Listener implements RecognitionListener {
 
     protected File contxt;
 
+    private Sonification sonification = new Sonification();
+
     protected Listener(File ctx) {
         contxt = ctx;
     }
@@ -40,6 +42,14 @@ class Listener implements RecognitionListener {
         Log.i(TAG, "onRmsChanged: " + System.currentTimeMillis() + " "  + String.valueOf(rmsdB) );
         FileWriter fileWriter = new FileWriter(contxt);
         fileWriter.writeFile(fName, System.currentTimeMillis() + ","  + String.valueOf(rmsdB) + "\n");
+        if (sonification.getAudioState()) {
+            //@todo
+        }
+
+        if (sonification.getRmsState()) {
+            //@todo
+        }
+
     }
     public void onBufferReceived(byte[] buffer)
     {
