@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Record record;
 
+    private Sonification sonification = new Sonification();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,8 +104,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void rmsGraph (View v) {}
+    public void rmsGraph (View v) {
+        sonification.setRmsState();
+    }
 
-    public void audioGraph (View v) {}
+    public void audioGraph (View v) {
+        sonification.setAudioState();
+    }
 
 }
