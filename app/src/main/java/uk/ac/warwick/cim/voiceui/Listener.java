@@ -1,9 +1,7 @@
 package uk.ac.warwick.cim.voiceui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.widget.TextView;
@@ -13,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 class Listener implements RecognitionListener {
-    private TextView mText;
+
     private static String TAG = "LISTENER";
 
     //String.valueOf(fileName)
