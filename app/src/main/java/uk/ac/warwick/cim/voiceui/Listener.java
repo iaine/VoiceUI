@@ -50,6 +50,7 @@ class Listener implements RecognitionListener {
     {
         Log.d(TAG, "onEndofSpeech");
         Log.i(TAG, "onEndOfSpeech: " + System.currentTimeMillis());
+
     }
     public void onError(int error)
     {
