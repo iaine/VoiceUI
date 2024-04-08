@@ -10,6 +10,7 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="17dp"
         android:text="@string/stt_string"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,6 +22,7 @@
         android:id="@+id/display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="17dp"
         android:text="@string/stt_update"
         app:layout_constraintBottom_toBottomOf="@id/text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,6 +33,7 @@
         android:id="@+id/recognise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="17dp"
         android:text="@string/stt_update"
         app:layout_constraintBottom_toBottomOf="@id/text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,12 +42,50 @@
         android:onClick="speechRecognise" />
 
     <TextView
+        android:id="@+id/recognise2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="17dp"
         android:text="@string/stt_display"
         app:layout_constraintTop_toBottomOf="@id/text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:onClick="displayLanguages" />
+
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:padding="17dp"
+        android:text="Stop"
+        app:layout_constraintTop_toBottomOf="@id/recognise2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="stopAudio" />
+
+    <Button
+        android:id="@+id/sonGraph"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:padding="17dp"
+        android:onClick="audioGraph"
+        android:text="Graph"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.733"
+        app:layout_constraintRight_toLeftOf="@id/sonGraph"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stop" />
+
+    <Button
+        android:id="@+id/sonRms"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:onClick="rmsGraph"
+        android:text="RMS"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.205"
+        app:layout_constraintLeft_toRightOf="@id/sonGraph"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stop" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
