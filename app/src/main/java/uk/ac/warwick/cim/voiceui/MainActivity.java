@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         if (checkCallingOrSelfPermission(requiredPermission) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{requiredPermission}, 101);
         }
-        File lFile = new File(this.getExternalFilesDir(null), "listener.txt");
-        File mediaFile = new File(this.getExternalFilesDir(null), "voice.mp3");
+        File lFile = new File(this.getExternalFilesDir(null), "listener" + System.currentTimeMillis() + ".txt");
+        File mediaFile = new File(this.getExternalFilesDir(null), "voice" + System.currentTimeMillis() + ".mp4");
         record = new Record(mediaRecorder);
         record.startRecordAudio(mediaFile);
         sr = SpeechRecognizer.createSpeechRecognizer(this);
