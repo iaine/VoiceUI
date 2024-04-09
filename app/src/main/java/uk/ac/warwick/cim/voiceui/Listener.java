@@ -15,14 +15,13 @@ class Listener implements RecognitionListener {
     private static String TAG = "LISTENER";
 
     //String.valueOf(fileName)
-    protected String fName= "listener.txt";
+    protected File fName;
 
-    protected File contxt;
 
     private Sonification sonification = new Sonification();
 
-    protected Listener(File ctx) {
-        contxt = ctx;
+    protected Listener(File fName1) {
+        fName = fName1;
     }
 
     public void onReadyForSpeech(Bundle params)
@@ -38,8 +37,8 @@ class Listener implements RecognitionListener {
     public void onRmsChanged(float rmsdB)
     {
         Log.i(TAG, "onRmsChanged: " + System.currentTimeMillis() + " "  + String.valueOf(rmsdB) );
-        FileWriter fileWriter = new FileWriter(contxt);
-        fileWriter.writeFile(fName, System.currentTimeMillis() + ","  + String.valueOf(rmsdB) + "\n");
+        FileWriter fileWriter = new FileWriter(fName);
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ","  + String.valueOf(rmsdB) + "\n");
         if (sonification.getAudioState()) {
             //@todo
         }
