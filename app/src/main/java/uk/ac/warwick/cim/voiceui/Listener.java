@@ -1,5 +1,6 @@
 package uk.ac.warwick.cim.voiceui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.SpeechRecognizer;
@@ -14,14 +15,16 @@ class Listener implements RecognitionListener {
 
     private static String TAG = "LISTENER";
 
-    //String.valueOf(fileName)
     protected File fName;
 
+    private FileWriter fileWriter;
 
-    private Sonification sonification = new Sonification();
+    private Sonification sonification;
 
-    protected Listener(File fName1) {
+    protected Listener(File fName1, String audio, Context ctx) {
         fName = fName1;
+        fileWriter = new FileWriter(fName);
+        sonification = new Sonification(ctx, audio);
     }
 
     public void onReadyForSpeech(Bundle params)
@@ -33,36 +36,38 @@ class Listener implements RecognitionListener {
     {
         Log.d(TAG, "onBeginningOfSpeech");
         Log.i(TAG, "onBeginningOfSpeech: " + System.currentTimeMillis());
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", onBeginningOfSpeech \n");
+
     }
     public void onRmsChanged(float rmsdB)
     {
         Log.i(TAG, "onRmsChanged: " + System.currentTimeMillis() + " "  + String.valueOf(rmsdB) );
-        FileWriter fileWriter = new FileWriter(fName);
+
         fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ","  + String.valueOf(rmsdB) + "\n");
         if (sonification.getAudioState()) {
-            //@todo
+            sonification.playAudioGraph(rmsdB);
         }
 
         if (sonification.getRmsState()) {
-            //@todo
+            sonification.playRmsAudio();
         }
 
     }
     public void onBufferReceived(byte[] buffer)
     {
         Log.i(TAG, "onBufferReceived" + new String(buffer, StandardCharsets.UTF_16BE) );
-        Log.d(TAG, "onBufferReceived");
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", onBufferReceived \n");
     }
     public void onEndOfSpeech()
     {
-        Log.d(TAG, "onEndofSpeech");
         Log.i(TAG, "onEndOfSpeech: " + System.currentTimeMillis());
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", onEndOfSpeech \n");
 
     }
     public void onError(int error)
     {
         Log.d(TAG,  "error " +  error);
-        //mText.setText("error " + error);
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + "," + error + " onError \n");
     }
     public void onResults(Bundle results) {
 
@@ -72,19 +77,19 @@ class Listener implements RecognitionListener {
         }
 
         String str = new String();
-        Log.d(TAG, "onResults " + obj);
         ArrayList data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         for (int i = 0; i < data.size(); i++) {
-            Log.d(TAG, "result " + data.get(i));
             str += data.get(i);
         }
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Text: " + str +" \n");
         //let's get the confidence
         float[] confidences = results.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES);
         String c = "";
         for (float c1: confidences){
             c += String.valueOf(c1) + " ,";
         }
-        Log.i(TAG, "Confidence: " + c);
+
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Confidence: " + c +" \n");
 
         String language = results.getString(SpeechRecognizer.DETECTED_LANGUAGE);
         int confidence = results.getInt(SpeechRecognizer.LANGUAGE_DETECTION_CONFIDENCE_LEVEL);
@@ -94,17 +99,15 @@ class Listener implements RecognitionListener {
 
         String message = language + " " + String.valueOf(confidence) + " " + lang_switch + " "
                 + res_alternatives + " " + alternative;
-        Log.i(TAG, message);
-        //mText.setText("results: "+String.valueOf(data.size()));
+
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Message: "+ message +"\n");
     }
     public void onPartialResults(Bundle partialResults)
     {
         String str = new String();
-        System.out.println ( "onPartialResults" + partialResults.describeContents() );
+
         ArrayList data = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        Log.d(TAG, "onPartialResults");
         for (int i = 0; i < partialResults.size(); i++) {
-            Log.d(TAG, "result " + data.get(i));
             str += data.get(i);
         }
 
@@ -116,13 +119,9 @@ class Listener implements RecognitionListener {
 
         String message = language + " " + String.valueOf(confidence) + " " + lang_switch + " "
                 + res_alternatives + " " + alternative;
-        Log.i(TAG, message);
 
-        String obj = "";
-        for(String key : partialResults.keySet()){
-            obj += partialResults.getString(key);   //later parse it as per your required type
-        }
-        Log.d(TAG, "onPartialResults " + obj);
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ","+ message +"\n");
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Partial: " + str +" \n");
     }
     public void onEvent(int eventType, Bundle params)
     {
@@ -130,8 +129,6 @@ class Listener implements RecognitionListener {
         for(String key : params.keySet()){
             obj += params.getString(key);   //later parse it as per your required type
         }
-        Log.d(TAG, "onEvent " + obj);
-        System.out.println ( "onEvent " + params.describeContents() );
-        Log.d(TAG, "onEvent " + eventType);
+        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Event: "+ obj +"\n");
     }
 }
