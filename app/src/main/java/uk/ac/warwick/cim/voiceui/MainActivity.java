@@ -6,8 +6,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -15,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.lang.reflect.*;
 
@@ -23,10 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
     private SpeechRecognizer sr;
     private static final int SPEECH_REQUEST_CODE = 0;
-
-    public MediaRecorder mediaRecorder;
-
-    private Record record;
 
     private Sonification sonification = new Sonification();
 
@@ -41,15 +34,9 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{requiredPermission}, 101);
         }
         File lFile = new File(this.getExternalFilesDir(null), "listener" + System.currentTimeMillis() + ".txt");
-        File mediaFile = new File(this.getExternalFilesDir(null), "voice" + System.currentTimeMillis() + ".mp4");
-        record = new Record(mediaRecorder);
-        record.startRecordAudio(mediaFile);
+
         sr = SpeechRecognizer.createSpeechRecognizer(this);
         sr.setRecognitionListener(new Listener(lFile));
-    }
-
-    public void stopAudio (View v) {
-        record.stopRecordAudio();
     }
 
     public void speechText (View v) {
