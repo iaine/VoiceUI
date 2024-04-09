@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private SpeechRecognizer sr;
     private static final int SPEECH_REQUEST_CODE = 0;
 
-    private Sonification sonification = new Sonification();
+    private Sonification sonification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{requiredPermission}, 101);
         }
         File lFile = new File(this.getExternalFilesDir(null), "listener" + System.currentTimeMillis() + ".txt");
-
+        String aFile = new File(this.getExternalFilesDir(null), "atom.wav").toString();
+        sonification = new Sonification(this, aFile);
         sr = SpeechRecognizer.createSpeechRecognizer(this);
-        sr.setRecognitionListener(new Listener(lFile));
+        sr.setRecognitionListener(new Listener(lFile, aFile, this));
     }
 
     public void speechText (View v) {
