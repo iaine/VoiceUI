@@ -3,6 +3,8 @@
 An Android app to support a paper in following the transformations in voice in Android using Speech
 to Text. 
 
+[![DOI](https://zenodo.org/badge/778890701.svg)](https://zenodo.org/doi/10.5281/zenodo.12723774)
+
 ### Usage
 
 Run the app and click on the voice button to activate Speech to Text. Speak and when the green light
