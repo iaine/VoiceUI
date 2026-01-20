@@ -35,7 +35,7 @@ internal class Listener(var fName: File) :
     }
 
     override fun onBufferReceived(buffer: ByteArray?) {
-        Log.i(TAG, "onBufferReceived" + kotlin.text.String(buffer!!, StandardCharsets.UTF_16BE))
+        Log.i(TAG, "onBufferReceived" + String(buffer!!, StandardCharsets.UTF_16BE))
         fileWriter.writeFile(
             fName.toString(),
             System.currentTimeMillis().toString() + ", onBufferReceived \n"
@@ -61,13 +61,13 @@ internal class Listener(var fName: File) :
     override fun onResults(results: Bundle) {
         var obj: String? = ""
         for (key in results.keySet()) {
-            obj += results.get(key) //later parse it as per your required type
+            obj += results[key] //later parse it as per your required type
         }
 
         var str: String? = ""
         val data: ArrayList<*>? = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         for (i in data!!.indices) {
-            str += data.get(i)
+            str += data[i]
         }
         fileWriter.writeFile(
             fName.toString(),
@@ -108,19 +108,19 @@ internal class Listener(var fName: File) :
         val data: ArrayList<*>? =
             partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         for (i in 0..<partialResults.size()) {
-            str += data!!.get(i)
+            str += data!![i]
         }
 
         val language = partialResults.getString(SpeechRecognizer.DETECTED_LANGUAGE)
         val confidence = partialResults.getInt(SpeechRecognizer.LANGUAGE_DETECTION_CONFIDENCE_LEVEL)
-        val lang_switch = partialResults.getInt(SpeechRecognizer.LANGUAGE_SWITCH_RESULT)
-        val res_alternatives: ArrayList<*>? =
+        val langSwitch = partialResults.getInt(SpeechRecognizer.LANGUAGE_SWITCH_RESULT)
+        val resAlternatives: ArrayList<*>? =
             partialResults.getStringArrayList(SpeechRecognizer.RESULTS_ALTERNATIVES)
         val alternative: ArrayList<*>? =
             partialResults.getStringArrayList(SpeechRecognizer.TOP_LOCALE_ALTERNATIVES)
 
-        val message = (language + " " + confidence.toString() + " " + lang_switch + " "
-                + res_alternatives + " " + alternative)
+        val message = (language + " " + confidence.toString() + " " + langSwitch + " "
+                + resAlternatives + " " + alternative)
 
         fileWriter.writeFile(
             fName.toString(),
