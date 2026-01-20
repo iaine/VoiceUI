@@ -1,134 +1,149 @@
-package uk.ac.warwick.cim.voiceui;
+package uk.ac.warwick.cim.voiceui
 
-import android.content.Context;
-import android.os.Bundle;
-import android.speech.RecognitionListener;
-import android.speech.SpeechRecognizer;
-import android.util.Log;
-import android.widget.TextView;
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.SpeechRecognizer
+import android.util.Log
+import java.io.File
+import java.nio.charset.StandardCharsets
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+internal class Listener(var fName: File) :
+    RecognitionListener {
+    private val fileWriter: FileWriter = FileWriter()
 
-class Listener implements RecognitionListener {
-
-    private static String TAG = "LISTENER";
-
-    protected File fName;
-
-    private FileWriter fileWriter;
-
-    private Sonification sonification;
-
-    protected Listener(File fName1, String audio, Context ctx) {
-        fName = fName1;
-        fileWriter = new FileWriter(fName);
-        sonification = new Sonification(ctx, audio);
+    override fun onReadyForSpeech(params: Bundle) {
+        println(params.describeContents())
+        Log.d(TAG, "onReadyForSpeech")
     }
 
-    public void onReadyForSpeech(Bundle params)
-    {
-        System.out.println ( params.describeContents() );
-        Log.d(TAG, "onReadyForSpeech");
+    override fun onBeginningOfSpeech() {
+        Log.d(TAG, "onBeginningOfSpeech")
+        Log.i(TAG, "onBeginningOfSpeech: " + System.currentTimeMillis())
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", onBeginningOfSpeech \n"
+        )
     }
-    public void onBeginningOfSpeech()
-    {
-        Log.d(TAG, "onBeginningOfSpeech");
-        Log.i(TAG, "onBeginningOfSpeech: " + System.currentTimeMillis());
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", onBeginningOfSpeech \n");
 
+    override fun onRmsChanged(rmsdB: Float) {
+        Log.i(TAG, "onRmsChanged: " + System.currentTimeMillis() + " " + rmsdB.toString())
+
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + "," + rmsdB.toString() + "\n"
+        )
     }
-    public void onRmsChanged(float rmsdB)
-    {
-        Log.i(TAG, "onRmsChanged: " + System.currentTimeMillis() + " "  + String.valueOf(rmsdB) );
 
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ","  + String.valueOf(rmsdB) + "\n");
-        if (sonification.getAudioState()) {
-            sonification.playAudioGraph(rmsdB);
+    override fun onBufferReceived(buffer: ByteArray?) {
+        Log.i(TAG, "onBufferReceived" + kotlin.text.String(buffer!!, StandardCharsets.UTF_16BE))
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", onBufferReceived \n"
+        )
+    }
+
+    override fun onEndOfSpeech() {
+        Log.i(TAG, "onEndOfSpeech: " + System.currentTimeMillis())
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", onEndOfSpeech \n"
+        )
+    }
+
+    override fun onError(error: Int) {
+        Log.d(TAG, "error $error")
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + "," + error + " onError \n"
+        )
+    }
+
+    override fun onResults(results: Bundle) {
+        var obj: String? = ""
+        for (key in results.keySet()) {
+            obj += results.get(key) //later parse it as per your required type
         }
 
-        if (sonification.getRmsState()) {
-            sonification.playRmsAudio();
+        var str: String? = ""
+        val data: ArrayList<*>? = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        for (i in data!!.indices) {
+            str += data.get(i)
         }
-
-    }
-    public void onBufferReceived(byte[] buffer)
-    {
-        Log.i(TAG, "onBufferReceived" + new String(buffer, StandardCharsets.UTF_16BE) );
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", onBufferReceived \n");
-    }
-    public void onEndOfSpeech()
-    {
-        Log.i(TAG, "onEndOfSpeech: " + System.currentTimeMillis());
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", onEndOfSpeech \n");
-
-    }
-    public void onError(int error)
-    {
-        Log.d(TAG,  "error " +  error);
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + "," + error + " onError \n");
-    }
-    public void onResults(Bundle results) {
-
-        String obj = "";
-        for(String key : results.keySet()){
-            obj += results.get(key);   //later parse it as per your required type
-        }
-
-        String str = new String();
-        ArrayList data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        for (int i = 0; i < data.size(); i++) {
-            str += data.get(i);
-        }
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Text: " + str +" \n");
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", Text: " + str + " \n"
+        )
         //let's get the confidence
-        float[] confidences = results.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES);
-        String c = "";
-        for (float c1: confidences){
-            c += String.valueOf(c1) + " ,";
+        val confidences = results.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
+        var c = ""
+        for (c1 in confidences!!) {
+            c += "$c1 ,"
         }
 
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Confidence: " + c +" \n");
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", Confidence: " + c + " \n"
+        )
 
-        String language = results.getString(SpeechRecognizer.DETECTED_LANGUAGE);
-        int confidence = results.getInt(SpeechRecognizer.LANGUAGE_DETECTION_CONFIDENCE_LEVEL);
-        int lang_switch = results.getInt(SpeechRecognizer.LANGUAGE_SWITCH_RESULT);
-        ArrayList res_alternatives = results.getStringArrayList(SpeechRecognizer.RESULTS_ALTERNATIVES);
-        ArrayList alternative = results.getStringArrayList(SpeechRecognizer.TOP_LOCALE_ALTERNATIVES);
+        val language = results.getString(SpeechRecognizer.DETECTED_LANGUAGE)
+        val confidence = results.getInt(SpeechRecognizer.LANGUAGE_DETECTION_CONFIDENCE_LEVEL)
+        val langSwitch = results.getInt(SpeechRecognizer.LANGUAGE_SWITCH_RESULT)
+        val resAlternatives: ArrayList<*>? =
+            results.getStringArrayList(SpeechRecognizer.RESULTS_ALTERNATIVES)
+        val alternative: ArrayList<*>? =
+            results.getStringArrayList(SpeechRecognizer.TOP_LOCALE_ALTERNATIVES)
 
-        String message = language + " " + String.valueOf(confidence) + " " + lang_switch + " "
-                + res_alternatives + " " + alternative;
+        val message = (language + " " + confidence.toString() + " " + langSwitch + " "
+                + resAlternatives + " " + alternative)
 
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Message: "+ message +"\n");
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", Message: " + message + "\n"
+        )
     }
-    public void onPartialResults(Bundle partialResults)
-    {
-        String str = new String();
 
-        ArrayList data = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        for (int i = 0; i < partialResults.size(); i++) {
-            str += data.get(i);
+    override fun onPartialResults(partialResults: Bundle) {
+        var str: String? = ""
+
+        val data: ArrayList<*>? =
+            partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        for (i in 0..<partialResults.size()) {
+            str += data!!.get(i)
         }
 
-        String language = partialResults.getString(SpeechRecognizer.DETECTED_LANGUAGE);
-        int confidence = partialResults.getInt(SpeechRecognizer.LANGUAGE_DETECTION_CONFIDENCE_LEVEL);
-        int lang_switch = partialResults.getInt(SpeechRecognizer.LANGUAGE_SWITCH_RESULT);
-        ArrayList res_alternatives = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_ALTERNATIVES);
-        ArrayList alternative = partialResults.getStringArrayList(SpeechRecognizer.TOP_LOCALE_ALTERNATIVES);
+        val language = partialResults.getString(SpeechRecognizer.DETECTED_LANGUAGE)
+        val confidence = partialResults.getInt(SpeechRecognizer.LANGUAGE_DETECTION_CONFIDENCE_LEVEL)
+        val lang_switch = partialResults.getInt(SpeechRecognizer.LANGUAGE_SWITCH_RESULT)
+        val res_alternatives: ArrayList<*>? =
+            partialResults.getStringArrayList(SpeechRecognizer.RESULTS_ALTERNATIVES)
+        val alternative: ArrayList<*>? =
+            partialResults.getStringArrayList(SpeechRecognizer.TOP_LOCALE_ALTERNATIVES)
 
-        String message = language + " " + String.valueOf(confidence) + " " + lang_switch + " "
-                + res_alternatives + " " + alternative;
+        val message = (language + " " + confidence.toString() + " " + lang_switch + " "
+                + res_alternatives + " " + alternative)
 
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ","+ message +"\n");
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Partial: " + str +" \n");
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + "," + message + "\n"
+        )
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", Partial: " + str + " \n"
+        )
     }
-    public void onEvent(int eventType, Bundle params)
-    {
-        String obj = "";
-        for(String key : params.keySet()){
-            obj += params.getString(key);   //later parse it as per your required type
+
+    override fun onEvent(eventType: Int, params: Bundle) {
+        var obj: String? = ""
+        for (key in params.keySet()) {
+            obj += params.getString(key) //later parse it as per your required type
         }
-        fileWriter.writeFile(fName.toString(), System.currentTimeMillis() + ", Event: "+ obj +"\n");
+        fileWriter.writeFile(
+            fName.toString(),
+            System.currentTimeMillis().toString() + ", Event: " + obj + "\n"
+        )
+    }
+
+    companion object {
+        private const val TAG = "LISTENER"
     }
 }

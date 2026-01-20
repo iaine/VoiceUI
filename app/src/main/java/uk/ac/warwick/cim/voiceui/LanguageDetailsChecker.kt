@@ -1,43 +1,31 @@
-package uk.ac.warwick.cim.voiceui;
+package uk.ac.warwick.cim.voiceui
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.speech.RecognizerIntent;
-import android.util.Log;
-import android.widget.TextView;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.speech.RecognizerIntent
+import android.util.Log
 
-import com.google.android.material.snackbar.Snackbar;
+class LanguageDetailsChecker : BroadcastReceiver() {
+    private var supportedLanguages: MutableList<String?>? = null
 
-import java.util.List;
+    private var languagePreference: String? = null
 
-public class LanguageDetailsChecker extends BroadcastReceiver {
-    private List<String> supportedLanguages;
-
-    private String languagePreference;
-
-    private TextView tv_display;
-
-    @Override
-    public void onReceive(Context context, Intent intent)
-    {
+    override fun onReceive(context: Context?, intent: Intent?) {
         //tv_display = (TextView) findViewById(R.id.display);
-        Bundle results = getResultExtras(true);
-        if (results.containsKey(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE))
-        {
+        val results = getResultExtras(true)
+        if (results.containsKey(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE)) {
             languagePreference =
-                    results.getString(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE);
+                results.getString(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE)
         }
-        if (results.containsKey(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES))
-        {
+        if (results.containsKey(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES)) {
             supportedLanguages =
-                    results.getStringArrayList(
-                            RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES);
+                results.getStringArrayList(
+                    RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES
+                )
         }
-        System.out.println(results.toString());
+        println(results.toString())
         //tv_display.append(results.toString());
-        Log.i("VOICE L",results.toString());
-
+        Log.i("VOICE L", results.toString())
     }
 }
