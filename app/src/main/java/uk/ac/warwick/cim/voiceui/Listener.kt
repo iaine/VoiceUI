@@ -61,7 +61,7 @@ internal class Listener(var fName: File) :
     override fun onResults(results: Bundle) {
         var obj: String? = ""
         for (key in results.keySet()) {
-            obj += results[key] //later parse it as per your required type
+            obj += results.getString(key) //later parse it as per your required type
         }
 
         var str: String? = ""
