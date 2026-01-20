@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 
@@ -30,11 +31,11 @@ class MainActivity : AppCompatActivity() {
         sr!!.setRecognitionListener(Listener(lFile))
     }
 
-    fun speechText() {
+    fun speechText(v: View?) {
         displaySpeechRecognizer()
     }
 
-    fun speechRecognise() {
+    fun speechRecognise(v: View?) {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(
             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         sr!!.startListening(intent)
     }
 
-    fun displayLanguages() {
+    fun displayLanguages(v: View?) {
         val detailsIntent = Intent(RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS)
         sendOrderedBroadcast(
             detailsIntent, null, LanguageDetailsChecker(), null,
